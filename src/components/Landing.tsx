@@ -7,21 +7,21 @@ const tools = [
     id: 'decision',
     icon: Gavel,
     title: 'Decision Court',
-    copy: 'Put a hard choice on trial with arguments, witnesses, verdict, confidence, and appeal evidence.',
-    stat: 'Risk + confidence verdict',
+    copy: 'Paste one messy decision and get inferred options, assumptions, risk, confidence, and a concrete next action.',
+    stat: 'One-sentence verdict',
   },
   {
     id: 'scam',
     icon: Search,
     title: 'ScamLens',
-    copy: 'Inspect suspicious messages for pressure tactics, risky links, impersonation, and unsafe requests.',
-    stat: 'Signal-based threat read',
+    copy: 'Judge suspicious messages with sender, domain, legitimate signals, pressure tactics, and safe verification steps.',
+    stat: 'Legit vs suspicious',
   },
   {
     id: 'meeting',
     icon: Users,
     title: 'MeetingRealityCheck',
-    copy: 'Convert messy notes into decisions, owners, unanswered questions, and a follow-up draft.',
+    copy: 'Convert messy notes into decisions, action owners, open questions, vague items, and a follow-up draft.',
     stat: 'Owners + agenda output',
   },
 ] as const;
@@ -34,11 +34,11 @@ export function Landing({ openTool }: { openTool: (tool: ToolId) => void }) {
           <p className="mb-3 text-xs uppercase tracking-[0.34em] text-acid">Reality Tools</p>
           <h1 className="text-4xl font-semibold tracking-normal text-white sm:text-5xl">Practical tools for decisions that deserve pressure.</h1>
           <p className="mt-4 text-base leading-7 text-steel">
-            Stress-test tradeoffs, scan suspicious messages, and turn meeting fog into accountable next steps.
+            Paste messy real-world text and get structured analysis with local fallback when AI is unavailable.
           </p>
         </div>
         <div className="grid gap-2 sm:grid-cols-3 lg:w-[32rem]">
-          {['No backend', 'Rule-based', 'Local history'].map((item) => (
+          {['AI-first', 'Safe fallback', 'Local history'].map((item) => (
             <div key={item} className="border border-line bg-panel/70 px-3 py-3 text-sm font-semibold text-white">
               <span className="block text-xs uppercase tracking-[0.2em] text-steel">Built for</span>
               {item}

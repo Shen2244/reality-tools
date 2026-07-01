@@ -1,47 +1,79 @@
-import { DecisionInput, MeetingInput, ScamInput } from '../types';
+import { DecisionSituationInput, MeetingInput, ScamInput } from '../types';
 
 const inDays = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
 
-export const decisionExamples: Array<{ name: string; input: DecisionInput }> = [
+export const decisionExamples: Array<{ name: string; input: DecisionSituationInput }> = [
   {
-    name: 'Launch pressure',
+    name: 'Used car pressure',
     input: {
-      question: 'Should we launch the paid beta next week or delay for onboarding fixes?',
-      context: 'The product is stable for power users, but new customers still need manual setup. Sales has three prospects waiting. Support capacity is limited for the next two weeks, and legal has not reviewed the enterprise terms.',
-      optionA: 'Launch paid beta next week with manual onboarding',
-      optionB: 'Delay two weeks and fix onboarding first',
-      deadline: inDays(5),
-      riskTolerance: 'medium',
-      importance: 'high',
-    },
-  },
-  {
-    name: 'Hiring tradeoff',
-    input: {
-      question: 'Should we hire a senior operator now or wait until revenue is less volatile?',
-      context: 'The founder is spending twenty hours per week on operations. Revenue is growing but still uneven. The candidate is strong, expensive, and available for only one more week. Cash runway is nine months.',
-      optionA: 'Hire the senior operator this month',
-      optionB: 'Wait one quarter and use contractors',
-      deadline: inDays(8),
+      situation: 'Should I buy this used car tonight? The seller says other buyers are waiting and wants Zelle.',
+      additionalContext: '',
+      optionA: '',
+      optionB: '',
+      deadline: '',
       riskTolerance: 'low',
       importance: 'high',
     },
   },
   {
-    name: 'Vendor switch',
+    name: 'Job offer',
     input: {
-      question: 'Should we move analytics vendors before the board review?',
-      context: 'The current vendor is slow and misses cohort reports. The new vendor has better dashboards but requires a migration and security approval. The board review is close, and the data team is already overloaded.',
-      optionA: 'Migrate to the new analytics vendor now',
-      optionB: 'Stay on the current vendor through the board review',
+      situation: 'Should I accept this job offer or wait for another company?',
+      additionalContext: '',
+      optionA: '',
+      optionB: '',
+      deadline: '',
+      riskTolerance: 'medium',
+      importance: 'high',
+    },
+  },
+  {
+    name: 'Drop class',
+    input: {
+      situation: 'Should I drop this class?',
+      additionalContext: '',
+      optionA: '',
+      optionB: '',
+      deadline: '',
+      riskTolerance: 'low',
+      importance: 'medium',
+    },
+  },
+  {
+    name: 'Launch pressure',
+    input: {
+      situation: 'Should we launch the paid beta next week or delay for onboarding fixes?',
+      additionalContext: 'The product is stable for power users, but new customers still need manual setup. Sales has three prospects waiting. Support capacity is limited for the next two weeks, and legal has not reviewed the enterprise terms.',
+      optionA: 'Launch paid beta next week with manual onboarding',
+      optionB: 'Delay two weeks and fix onboarding first',
       deadline: inDays(14),
       riskTolerance: 'medium',
-      importance: 'medium',
+      importance: 'high',
     },
   },
 ];
 
 export const scamExamples: Array<{ name: string; input: ScamInput }> = [
+  {
+    name: 'School portal email',
+    input: {
+      channel: 'email',
+      sender: 'finaid@vt.edu',
+      visibleDomain: 'vt.edu',
+      claimedOrganization: 'Virginia Tech',
+      message: 'Virginia Tech Financial Aid: Please log in to your student portal by July 5 to review your aid package.',
+    },
+  },
+  {
+    name: 'Bank code theft',
+    input: {
+      channel: 'SMS',
+      sender: 'unknown',
+      visibleDomain: 'unknown',
+      claimedOrganization: 'bank',
+      message: 'Your bank account will be locked today. Click this link to verify your password and send us the 6-digit code to avoid suspension.',
+    },
+  },
   {
     name: 'Package fee SMS',
     input: {
@@ -53,7 +85,10 @@ export const scamExamples: Array<{ name: string; input: ScamInput }> = [
     name: 'Marketplace off-platform',
     input: {
       channel: 'marketplace',
-      message: 'I can pay full price today but I only use WhatsApp. Text me directly and I will send a courier. Kindly refund the extra shipping after I overpay through Zelle.',
+      sender: 'unknown',
+      visibleDomain: 'none',
+      claimedOrganization: 'none',
+      message: 'I can pay you extra if we move off Facebook Marketplace. Text me on WhatsApp and I will send Zelle now.',
     },
   },
   {
@@ -66,6 +101,22 @@ export const scamExamples: Array<{ name: string; input: ScamInput }> = [
 ];
 
 export const meetingExamples: Array<{ name: string; input: MeetingInput }> = [
+  {
+    name: 'Regression paragraph',
+    input: {
+      goal: 'Launch readiness',
+      attendees: 'Maya, Jordan, Alex',
+      notes: 'We agreed to launch the landing page next Friday. Maya will finish the copy by Tuesday. Need to confirm ad budget. We should circle back on influencer strategy soon.',
+    },
+  },
+  {
+    name: 'Short messy note',
+    input: {
+      goal: '',
+      attendees: '',
+      notes: 'Need to fix pricing page. Alex maybe by Friday. Budget unclear.',
+    },
+  },
   {
     name: 'Launch readiness',
     input: {
