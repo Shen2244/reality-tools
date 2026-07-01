@@ -277,7 +277,11 @@ export default async function handler(req: ServerRequest, res: ServerResponse) {
     });
 
     if (!response.ok) {
-      return res.status(502).json({ ok: false, error: 'AI model request failed.' });
+      const errorPayload = await response.json().catch(() => null);
+      const message = typeof errorPayload?.error?.message === 'string'
+        ? errorPayload.error.message.slice(0, 240)
+        : `Gemini returned HTTP ${response.status}.`;
+      return res.status(502).json({ ok: false, error: `AI model request failed: ${message}` });
     }
 
     const payload = await response.json();
