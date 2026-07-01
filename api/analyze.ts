@@ -13,7 +13,7 @@ type ServerRequest = {
 
 const allowedTools = ['decisionCourt', 'scamLens', 'meetingRealityCheck'] as const;
 const maxBodyLength = 12_000;
-const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
 
 const clampScore = (value: unknown) => Math.min(100, Math.max(0, Math.round(Number(value) || 0)));
 const asArray = (value: unknown) => Array.isArray(value) ? value.map(String).slice(0, 8) : [];
