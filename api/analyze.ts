@@ -13,7 +13,7 @@ type ServerRequest = {
 
 const allowedTools = ['decisionCourt', 'scamLens', 'meetingRealityCheck'] as const;
 const maxBodyLength = 12_000;
-const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 
 const clampScore = (value: unknown) => Math.min(100, Math.max(0, Math.round(Number(value) || 0)));
 const asArray = (value: unknown) => Array.isArray(value) ? value.map(String).slice(0, 8) : [];
@@ -146,7 +146,35 @@ function systemPrompt(tool: AnalyzeRequest['tool']) {
 }
 
 function userPrompt(request: AnalyzeRequest) {
-  return `Analyze this ${request.tool} input and return only JSON matching the schema.\n\nInput:\n${JSON.stringify(request.input, null, 2)}\n\nPre-scan:\n${JSON.stringify(request.preScan ?? {}, null, 2)}`;
+  return [
+    systemPrompt(request.tool),
+    '',
+    `Analyze this ${request.tool} input and return only valid JSON.`,
+    'Do not wrap the JSON in markdown fences.',
+    'Do not include commentary before or after the JSON.',
+    'Match this JSON schema shape:',
+    JSON.stringify(schemas[request.tool].schema, null, 2),
+    '',
+    'Input:',
+    JSON.stringify(request.input, null, 2),
+    '',
+    'Pre-scan:',
+    JSON.stringify(request.preScan ?? {}, null, 2),
+  ].join('\n');
+}
+
+function parseGeminiJson(content: string) {
+  const trimmed = content.trim();
+  const unfenced = trimmed
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  const start = unfenced.indexOf('{');
+  const end = unfenced.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error('No JSON object found.');
+  }
+  return JSON.parse(unfenced.slice(start, end + 1)) as Record<string, unknown>;
 }
 
 function normalize(tool: AnalyzeRequest['tool'], result: Record<string, unknown>) {
@@ -224,30 +252,26 @@ export default async function handler(req: ServerRequest, res: ServerResponse) {
     return res.status(400).json({ ok: false, error: 'Invalid analysis request.' });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     return res.status(503).json({ ok: false, error: 'AI analysis is not configured.' });
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt(request.tool) },
-          { role: 'user', content: userPrompt(request) },
-        ],
-        temperature: 0.2,
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            ...schemas[request.tool],
-            strict: true,
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: userPrompt(request) }],
           },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          responseMimeType: 'application/json',
         },
       }),
     });
@@ -257,12 +281,12 @@ export default async function handler(req: ServerRequest, res: ServerResponse) {
     }
 
     const payload = await response.json();
-    const content = payload?.choices?.[0]?.message?.content;
+    const content = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!content || typeof content !== 'string') {
       return res.status(502).json({ ok: false, error: 'AI returned an empty result.' });
     }
 
-    const parsed = JSON.parse(content) as Record<string, unknown>;
+    const parsed = parseGeminiJson(content);
     return res.status(200).json({
       ok: true,
       source: 'ai',

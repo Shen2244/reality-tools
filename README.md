@@ -11,7 +11,7 @@ Live app: https://reality-tools.vercel.app/
 - Vite
 - Tailwind CSS
 - Vercel serverless function at `/api/analyze`
-- OpenAI API through a server-side `OPENAI_API_KEY`
+- Gemini API through a server-side `GEMINI_API_KEY`
 - localStorage for browser-local History
 - lucide-react icons
 
@@ -35,7 +35,7 @@ cp .env.example .env.local
 Add your key to `.env.local`:
 
 ```text
-OPENAI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 Start the app:
@@ -61,7 +61,7 @@ npm run preview
 Set the environment variable in Vercel Project Settings:
 
 ```text
-OPENAI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 Do not prefix the key with `VITE_`. The key is used only by the serverless API route and must never be exposed to browser code.
@@ -85,7 +85,7 @@ The local fallback still produces a result and supports Save, History, and `.txt
 ## Security Notes
 
 - Never commit real API keys.
-- Keep `OPENAI_API_KEY` server-side only.
+- Keep `GEMINI_API_KEY` server-side only.
 - The API validates tool names, limits request size, asks for structured JSON, validates returned shape before rendering, and clamps scores to 0-100.
 - ScamLens is defensive only and must not be used to write scam messages, improve impersonation, or bypass detection.
 
@@ -103,4 +103,4 @@ The local fallback still produces a result and supports Save, History, and `.txt
 - Add import/export for full History.
 - Add lightweight regression fixtures.
 - Add richer mobile report views.
-- Add optional model configuration through a server-side environment variable.
+- Add optional model configuration through the server-side `GEMINI_MODEL` environment variable.
